@@ -1,0 +1,19 @@
+/* CSS file */
+
+		@font-face {
+	    src:url("assets/sectiontitle.ttf");
+	    fontFamily: sectionFont;
+		}
+
+		Application 
+		{ 
+ 		   backgroundColor: #BCD3FA;
+		   backgroundGradientColors: #e2d0ff, #d4cdff;
+		   backgroundGradientAlphas: 0.5, 0.5;
+		}
+		.sectionTitle /* The title of each component */
+		{
+			font-family:sectionFont;
+			font-size:16px;
+		}
+		

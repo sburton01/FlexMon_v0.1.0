@@ -1,0 +1,36 @@
+/* CSS file */
+
+		@font-face {
+	    src:url("assets/sectiontitle.ttf");
+	    fontFamily: sectionFont;
+		}
+
+		Application 
+		{ 
+ 		   backgroundColor: #BCD3FA;
+		   backgroundGradientColors: #e2d0ff, #d4cdff;
+		   backgroundGradientAlphas: 0.5, 0.5;
+		}
+		.sectionTitle /* The title of each component */
+		{
+			font-family:sectionFont;
+			font-size:16px;
+		}
+
+		.normal /* When an item is at normal conditions */
+		{
+ 		   backgroundAlpha: 0.0;
+		}				
+		
+		.warning /* When an item is at the warning level */
+		{
+ 		   backgroundColor: #dddd00;
+ 		   backgroundAlpha: 0.5;
+		}
+		
+		.alert /* When an item is at the alert/critical level */
+		{
+ 		   backgroundColor: #e2625f;
+ 		   backgroundAlpha: 0.5;
+		}		
+		

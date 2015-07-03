@@ -1,0 +1,14 @@
+/* CSS file */
+		Application 
+		{ 
+ 		   backgroundColor: #BCD3FA;
+		   backgroundGradientColors: #e2d0ff, #d4cdff;
+		   backgroundGradientAlphas: 0.5, 0.5;
+		}
+		.SectionTitle /* The title of each component */
+		{
+			font-family:Tahoma;
+			font-size:14px;
+			color:#121212;
+		}
+		

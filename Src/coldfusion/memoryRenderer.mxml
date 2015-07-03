@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+    <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" preinitialize ="initMe();">    
+        <mx:Script>
+            <![CDATA[
+
+            import mx.controls.dataGridClasses.DataGridListData;
+            import flash.events.Event;
+			import mx.controls.Alert;
+
+             public function initMe():void { 
+                addEventListener("dataChange", handleDataChanged);
+            }   
+            
+            public function handleDataChanged(event:Event):void 
+            {
+            	//the first time this function gets called, 'data' doesn't exist yet on the pre-init
+				if(data != null) 
+				{
+					switch(parentDocument.arAlertData[data.Index-1].MemUsage)
+					{
+						case 0:
+							this.styleName = 'normal';
+							break;
+						case 1:
+							this.styleName = 'warning';
+							break;
+						case 2:
+							this.styleName = 'alert';						
+							break;
+						default:
+					}
+				}
+            }       
+            ]]>
+        </mx:Script>
+		<mx:Text text="{data.MemUsage}"/>		
+    </mx:VBox>
+

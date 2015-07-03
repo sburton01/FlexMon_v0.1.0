@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="400" height="300" xmlns="coldfusion.*">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.rpc.events.ResultEvent;
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+
+		    [Bindable]
+	        public var arMetricData:ArrayCollection;
+
+		    [Bindable]
+	        public var arAlertData:ArrayCollection;
+
+		    [Bindable]	        
+			public var arReqsQueued:ArrayCollection = new ArrayCollection();
+
+            public var iAlerts:uint = 0;
+            public var iWarnings:uint = 0;
+                        
+       		public var chartMaxItems:Number = 15; /* How many data points to maintain on chart */  
+       		
+			public function handleMetricsResult(event:ResultEvent):void
+			{
+      			var tempObj1:Object = new Object();
+      			var tempObj2:Object = new Object();
+      			var notifyLevel:String = 'normal';
+      			
+      			/* What I'm trying to do here is reproduce something like this:
+    			 {time: 1, server1:5, server2:7,server3:2},
+    			 {time: 2, server1:2, server2:9,server3:4},    			 
+    			*/
+				arMetricData = ArrayCollection(event.result.data);
+				arAlertData = ArrayCollection(event.result.alertdata);
+				iAlerts = event.result.alerts;
+				iWarnings = event.result.warnings;
+				trace("Alerts:" + iAlerts);
+				trace("Warnings:" + iWarnings);				
+			    /* We only want to graph the last max x items, so if the array is at x
+			       then we begin to start popping off the first item */
+			    if(arReqsQueued.length > chartMaxItems)
+			    {
+			    	arReqsQueued.removeItemAt(1);
+			    }
+			    
+				for (var i:int = 0; i < arMetricData.length; i++) 
+				{
+					tempObj1 = arMetricData.getItemAt(i);
+					tempObj2[tempObj1.Title] = tempObj1.ReqRunning;
+					tempObj2.time = tempObj1.TimeStamp;
+				}
+				arReqsQueued.addItem(tempObj2);
+				liveGraph.chartData = arReqsQueued;
+				liveGraph.servers = arMetricData;
+				liveGraph.drawChart();
+								
+				//determine if we need to fire out any alerts or warnings 
+				if(iAlerts > 0)
+					this.dispatchEvent(new Event('alert'));
+				else if(iWarnings > 0)
+					this.dispatchEvent(new Event('warning'));								
+
+
+			}
+		]]>
+	</mx:Script>
+	
+	<!-- <mx:Button label="refresh" click="refreshData()"/> -->  
+		<mx:VBox width="40%" height="100%">
+			<mx:Label text="CF Server Metrics" styleName="sectionTitle"/>
+			<mx:DataGrid dataProvider="{arMetricData}" height="100%">
+			            <mx:columns>
+		                <mx:Array>
+		                    <mx:DataGridColumn dataField="Title" headerText="Server" width="80" wordWrap="true" />                
+		                    <mx:DataGridColumn dataField="AvgQueueTime" headerText="AQT" width="40" itemRenderer="coldfusion.aqtRenderer"/>
+		                    <mx:DataGridColumn dataField="AvgReqTime" headerText="ART" width="40" itemRenderer="coldfusion.artRenderer"/>
+		                    <mx:DataGridColumn dataField="ReqQueued" headerText="RQ" width="40" itemRenderer="coldfusion.rqRenderer"/>
+		                    <mx:DataGridColumn dataField="ReqRunning" headerText="RR" width="40" itemRenderer="coldfusion.rrRenderer"/>
+		                    <mx:DataGridColumn dataField="ReqTimedOut" headerText="RTO" width="40" itemRenderer="coldfusion.rtoRenderer"/>
+		                    <mx:DataGridColumn dataField="SimpleLoad" headerText="Load" width="40" itemRenderer="coldfusion.loadRenderer"/>                    
+		                    <mx:DataGridColumn dataField="SessionCount" headerText="Sessions" width="60" itemRenderer="coldfusion.sessionsRenderer"/>             
+		                    <mx:DataGridColumn dataField="MemUsage" headerText="Mem (%)" width="60" itemRenderer="coldfusion.memoryRenderer"/>                               
+		                </mx:Array>
+		            </mx:columns>
+			</mx:DataGrid>
+		</mx:VBox>
+		
+		<graph id="liveGraph" width="60%" height="100%"/>	
+		
+	
+</mx:HBox>

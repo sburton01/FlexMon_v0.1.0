@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%">
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;		
+			import mx.rpc.events.ResultEvent;
+						
+		    [Bindable]
+	        public var arMetricData:ArrayCollection;
+				        
+			public function handleMetricsResult(event:ResultEvent):void
+			{
+				arMetricData = ArrayCollection(event.result.data);
+			}		        
+		]]>
+	</mx:Script>
+
+	<mx:Label text="SeeFusion - Requests Running" styleName="sectionTitle"/>
+		<mx:DataGrid width="100%" height="100%" dataProvider="{arMetricData}" variableRowHeight="false" rowHeight="20">
+	            <mx:columns>
+                <mx:Array>
+                    <mx:DataGridColumn dataField="Title" headerText="Server" width="80"/>                
+                    <mx:DataGridColumn dataField="Elapsed" headerText="Time" width="50"/>
+                    <mx:DataGridColumn dataField="IP" headerText="IP" width="100"/>                    
+                    <mx:DataGridColumn dataField="URL" headerText="Page" width="300"/>
+                    <mx:DataGridColumn dataField="SQL" headerText="Query" wordWrap="false"/>
+                </mx:Array>
+            </mx:columns>
+	</mx:DataGrid>
+</mx:VBox>
+

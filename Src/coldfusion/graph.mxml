@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%">
+
+
+
+
+
+	  <mx:Script>
+        <![CDATA[
+        	import mx.charts.LegendItem;
+
+        import mx.collections.ArrayCollection;
+        import mx.charts.renderers.LineRenderer;
+        import mx.charts.series.LineSeries;
+		import mx.controls.Alert;
+		import mx.graphics.Stroke;
+		import mx.charts.effects.SeriesInterpolate;
+        [Bindable]
+        public var chartData:ArrayCollection = new ArrayCollection;
+        [Bindable]
+        public var servers:ArrayCollection = new ArrayCollection;
+        
+        public var bLegendInitialized:Boolean=false;
+        public var arColors:Array = [0x666398,0xCC0000,0x33FF66,0xFF9900,0xCC00FF,0xc4b0ec];
+      
+		
+        public function drawChart():void
+        {
+        		var ls:LineSeries= new LineSeries();
+                var li:LegendItem;
+        		linechart.series = [ls];
+        		var tempObj:Object;
+        		for (var i:int = 0; i < servers.length; i++) 
+				{
+					tempObj = servers.getItemAt(i);					
+					ls = new LineSeries();
+					ls.yField = tempObj.Title;
+					ls.xField = 'time';	
+					ls.displayName = tempObj.Title;
+					ls.setStyle("lineStroke",new Stroke(arColors[i],3));
+					linechart.series[i] = ls;
+				}
+				
+				if(!bLegendInitialized)
+				{
+					chartLegend.direction = "horizontal";
+	        		for (i = 0; i < servers.length; i++) 
+	        		{
+	        			li = new LegendItem();
+						li.label = servers.getItemAt(i).Title;
+						li.setStyle("stroke",new Stroke(arColors[i],3));
+						li.setStyle("direction","horizontal");
+						
+						chartLegend.addChild(li);		
+	        		}
+	        		chartLegend.autoLayout=false;	      
+	        		chartLegend.direction = "horizontal";	        		
+	        		chartLegend.autoLayout=true;	      	        		
+	        		bLegendInitialized = true;
+				}
+        }     
+        
+        ]]>
+    </mx:Script>
+
+		<mx:Label text="Running Requests" styleName="sectionTitle"/>
+        <mx:LineChart id="linechart" height="80%" width="100%" paddingLeft="5" paddingRight="5" showDataTips="true" dataProvider="{chartData}"> 
+            <mx:horizontalAxis>
+                <mx:CategoryAxis categoryField="time"/>
+            </mx:horizontalAxis>
+        </mx:LineChart>
+
+        <mx:Legend id="chartLegend" direction="horizontal" width="100%" />
+</mx:VBox>
+
+
+
+

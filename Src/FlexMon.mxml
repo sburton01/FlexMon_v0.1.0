@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="horizontal" autoLayout="true" height="100%" width="100%"
+	            xmlns:cf="coldfusion.*" paddingTop="2" paddingBottom="2" paddingLeft="2" paddingRight="2"
+	            xmlns:sf="seefusion.*" 
+	            xmlns:fx="fax.*"
+	            creationComplete="initMe()" >
+
+
+	<mx:Style source="assets/style.css"/>
+	<mx:Script>
+		<![CDATA[
+			import mx.rpc.events.FaultEvent;
+			import mx.core.SoundAsset;
+			import mx.rpc.events.ResultEvent;
+			import mx.controls.Alert;
+		    import flash.utils.Timer;
+		    import flash.events.TimerEvent;
+		    import flash.media.*; 
+
+    	    
+		    public var myTimer:Timer;
+		    
+            [Bindable]
+            public var refreshRates: Array = [ {label:"5s", data:5000}, {label:"10s", data:10000}, 
+                                        {label:"15s", data:15000}, {label:"30s", data:30000},
+						                {label:"60s", data:60000}];
+						          
+			// This is for making all the sounds during an alert situation    
+            [Embed(source="assets/alert1.mp3")]
+            private var alertSoundClass:Class;	
+            [Embed(source="assets/warning.mp3")]
+            private var warningSoundClass:Class;	
+                        
+            public var alertSnd:SoundAsset = new alertSoundClass() as SoundAsset; 
+            public var warningSnd:SoundAsset = new warningSoundClass() as SoundAsset;             
+            public var sndChannel:SoundChannel;
+		    
+		    public function initMe():void
+		    {
+		    	//Initialize our handy dandy timer.
+		    	cbRefreshRate.selectedIndex=0;		    	
+		    	myTimer = new Timer(cbRefreshRate.selectedItem.data);
+		    	myTimer.addEventListener('timer',refreshData);
+		    	myTimer.start();
+		    	
+		    	//Register to listen to alerts from all the views
+		    	cfView.addEventListener('alert',alertManager);
+		    	sfView.addEventListener('alert',alertManager);	
+		    	fxView.addEventListener('alert',alertManager);		
+		    	
+		    	//Register to listen to alerts from all the views
+		    	cfView.addEventListener('warning',warningManager);
+		    	sfView.addEventListener('warning',warningManager);	
+		    	fxView.addEventListener('warning',warningManager);			    		    		    	
+		    }
+		    	    
+			public function refreshData(event:TimerEvent):void
+			{
+				flexMonSrv.getMetrics('coldfusion');
+				flexMonSrv.getMetrics('seefusion');	
+				flexMonSrv.getMetrics('fax');								
+			}
+		
+			public function handleMetricsResult(event:ResultEvent):void
+			{
+				// Pass along the data to the appropriate module
+				switch(event.result.module)
+				{
+					case 'coldfusion': cfView.handleMetricsResult(event);
+					break;
+					case 'seefusion' : sfView.handleMetricsResult(event);
+					break;			
+					case 'fax' 		 : fxView.handleMetricsResult(event);
+					break;								
+				}
+			}
+			
+		    public function alertManager(event:Event):void
+		    {
+				sndChannel=alertSnd.play();
+		    }	
+		    
+		    public function warningManager(event:Event):void
+		    {
+				sndChannel=warningSnd.play();
+		    }			    	
+		    
+		    public function changeRefresh(newRefresh:uint):void
+		    {
+		    	myTimer.delay = newRefresh;
+		    }	
+			
+			public function handleFault(event:FaultEvent)
+			{
+				
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:RemoteObject id="flexMonSrv" destination="ColdFusion" source="FlexMon.distributor" showBusyCursor="false">  
+		<mx:method name="getMetrics" result="handleMetricsResult(event)" fault="handleFault(event)"/>
+   </mx:RemoteObject> 
+
+
+
+
+	<mx:Panel  width="99%" height="99%" title="" titleIcon="@Embed('assets/FlexMon.png')">
+		<cf:view id="cfView" width="100%" height="40%"/>
+		<mx:HBox width="100%" height="70%">
+			<sf:view id="sfView" height="100%"/>	
+			<fx:view id="fxView" width="160" height="100%"/>				
+		</mx:HBox>
+
+		
+        <mx:ControlBar>
+            <mx:Label text="Refresh Rate"/>
+	        <mx:ComboBox id="cbRefreshRate" dataProvider="{refreshRates}" close="changeRefresh(event.target.selectedItem.data)"/>
+        </mx:ControlBar>				
+	</mx:Panel>	
+</mx:Application>
+
+

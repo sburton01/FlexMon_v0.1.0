@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<flexmon>
+	<thresholds>
+		<coldfusion>
+			<avgdbtime warnat="100" alertat="150"/>		
+			<avgqueuetime warnat="1" alertat="2"/>		
+			<avgreqtime  warnat="100" alertat="1000"/>	
+			<reqqueued  warnat="10" alertat="15"/>
+			<reqrunning warnat="10" alertat="20"/>		
+			<reqtimedout warnat="2" alertat="5"/>		
+			<simpleload warnat="1" alertat="2"/>			
+			<sessioncount warnat="350" alertat="500"/>		
+			<memusage warnat="60" alertat="80"/>				
+		</coldfusion>
+	</thresholds>
+	<servers> <!--- Add a server entry for each server you want to monitor. --->
+		<server title="Dopejam"> <!-- THESE ARE JUST EXAMPLES - THEY'RE NOT REAL -->
+			<agentws>http://www.dopejam.com/FlexMon/agent.cfc?wsdl</agentws>
+			<seefusionurl majorversion="4">http://www.dopejam.com:8999/xml</seefusionurl> <!--- Leave URL Blank if you don't use SeeFusion --->
+		</server>
+		<server title="CFLEX">
+			<agentws>http://www.cflex.net/FlexMon/agent.cfc?wsdl</agentws>
+			<seefusionurl majorversion="4">http://www.cflex.net:8999/xml</seefusionurl> <!--- Leave URL Blank if you don't use SeeFusion --->
+		</server>									
+	</servers>
+</flexmon>
